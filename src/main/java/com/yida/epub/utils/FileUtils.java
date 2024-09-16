@@ -321,20 +321,5 @@ public class FileUtils {
 		} catch (IOException e) {
 			return false;
 		}
-		/*try {
-			//获取目录下所有文件和目录
-			File files[] = directory.listFiles();
-			for (File file : files) {
-				if(file.isDirectory()) {
-					deleteDir(file);
-				} else {
-					file.delete();
-				}
-			}
-			//最终把该目录也删除
-			return directory.delete();
-		} catch (Exception e) {
-		    return false;
-		}*/
 	}
 }

@@ -1,0 +1,100 @@
+.bold {
+    font-weight: bold
+}
+
+.calibre {
+    display: block;
+    font-size: 1em;
+    padding-left: 0;
+    padding-right: 0;
+    text-align: justify;
+    margin: 0 5pt
+}
+
+.calibre_ {
+    display: block;
+    text-align: center;
+    text-indent: 0;
+    margin: 0
+}
+
+.calibre_1 {
+    display: block;
+    text-indent: 0;
+    margin: 2em 0 0
+}
+
+.calibre_2 {
+    display: block;
+    text-indent: 0;
+    margin: 0
+}
+
+.calibre_3 {
+    display: block;
+    text-align: center;
+    text-indent: 0;
+    margin: 1em 0 0
+}
+
+.calibre_4 {
+    height: 751px;
+    vertical-align: baseline;
+    width: 501px
+}
+
+.calibre_5 {
+    display: block;
+    text-align: justify;
+    text-indent: 2em;
+    margin: 1em 0 0
+}
+
+.calibre_6 {
+    display: block;
+    text-align: right;
+    text-indent: 2em;
+    margin: 1em 0 0
+}
+
+.calibre_7 {
+    display: block;
+    text-indent: -14pt;
+    margin: 1em 0 0 14pt
+}
+
+.calibre_8 {
+    display: block;
+    text-indent: -14pt;
+    margin: 0 0 0 14pt
+}
+
+.calibre_9 {
+    display: block;
+    margin: 0 0 0 2em
+}
+
+.calibre_10 {
+    display: block;
+    text-indent: 0;
+    margin: 0 0 0 2em
+}
+
+.calibre1 {
+    font-size: 1.83333em;
+    line-height: 1.2
+}
+
+.calibre2 {
+    display: block
+}
+
+.calibre3 {
+    font-size: 1.41667em;
+    line-height: 1.2
+}
+
+.mbp_pagebreak {
+    display: block;
+    margin: 0
+}

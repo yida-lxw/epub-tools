@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+  <metadata xmlns:calibre="http://calibre.kovidgoyal.net/2009/metadata" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:opf="http://www.idpf.org/2007/opf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <dc:publisher>北京十月文艺出版社</dc:publisher>
+    <dc:date>2015-02-28T16:00:00+00:00</dc:date>
+    <dc:creator opf:file-as="未知" opf:role="aut">${author}</dc:creator>
+    <dc:contributor opf:role="bkp">calibre (3.23.0) [https://calibre-ebook.com]</dc:contributor>
+    <dc:title>${title}</dc:title>
+    <dc:language>zh</dc:language>
+    <meta name="cover" content="cover"/>
+    <dc:identifier opf:scheme="MOBI-ASIN">cabef00b-0816-4b7d-8d4f-efc2be95ca88</dc:identifier>
+    <dc:identifier id="uuid_id" opf:scheme="uuid">92723567-ae32-46a6-8040-2770571e04fc</dc:identifier>
+    <meta name="calibre:timestamp" content="2021-09-18T00:23:01.598000+00:00"/>
+  </metadata>
+  <manifest>
+    ${imagePageItem}
+    ${htmlPageItem}
+    <item href="page_styles.css" id="page_css" media-type="text/css"/>
+    <item href="stylesheet.css" id="css" media-type="text/css"/>
+    <item href="table_content_begin.html" id="table_content_begin_page" media-type="application/xhtml+xml"/>
+    <item href="table_content_end.html" id="table_content_end_page" media-type="application/xhtml+xml"/>
+    <item href="titlepage.xhtml" id="titlepage" media-type="application/xhtml+xml"/>
+    <item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="titlepage"/>
+    <itemref idref="table_content_begin_page"/>
+    ${htmlPageItemRefContent}
+    <itemref idref="table_content_end_page"/>
+  </spine>
+  <guide>
+    <reference href="titlepage.xhtml" title="Cover" type="cover"/>
+    ${startPageGuidRefContent}
+    <reference href="table_content_begin.html" title="目录" type="toc"/>
+  </guide>
+</package>
