@@ -1,6 +1,7 @@
 package com.yida.epub.utils;
 
 import com.github.houbb.opencc4j.util.ZhConverterUtil;
+import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,8 +12,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author yida
@@ -320,6 +326,56 @@ public class FileUtils {
 			return true;
 		} catch (IOException e) {
 			return false;
+		}
+	}
+
+	/**
+	 * @param filePath
+	 * @return String
+	 * @description 从classpath读取文件内容
+	 * @author yida
+	 * @date 2024-09-16 21:39:34
+	 */
+	public String readFileFromClasspath(String filePath) throws IOException {
+		InputStream inputStream = FileUtils.class.getResourceAsStream(filePath);
+		if (null == inputStream) {
+			filePath = "/" + filePath;
+			inputStream = FileUtils.class.getResourceAsStream(filePath);
+		}
+		return IOUtils.toString(inputStream);
+	}
+
+	/**
+	 * @param sourceDirPath
+	 * @param zipFilePath
+	 * @description 将指定目录打包为epub
+	 * @author yida
+	 * @date 2024-09-16 21:57:07
+	 */
+	private static void pack2Epub(String sourceDirPath, String zipFilePath) throws IOException {
+		Path p = Files.createFile(Paths.get(zipFilePath));
+		try (ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(p))) {
+			Path filePath = Paths.get(sourceDirPath);
+			Files.walk(filePath)
+					.filter(path -> !Files.isDirectory(path))
+					.forEach(path -> {
+						ZipEntry zipEntry = new ZipEntry(filePath.relativize(path).toString());
+						try {
+							zipOutputStream.putNextEntry(zipEntry);
+							zipOutputStream.write(Files.readAllBytes(path));
+							zipOutputStream.closeEntry();
+						} catch (Exception e) {
+							e.printStackTrace();
+						} finally {
+							if (null != zipOutputStream) {
+								try {
+									zipOutputStream.close();
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
 		}
 	}
 }
