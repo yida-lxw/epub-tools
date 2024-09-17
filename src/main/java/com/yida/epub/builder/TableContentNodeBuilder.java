@@ -1,4 +1,4 @@
-package com.yida.epub.factory;
+package com.yida.epub.builder;
 
 import com.yida.epub.bean.TableContentNode;
 
@@ -9,16 +9,20 @@ import java.util.Map;
 
 /**
  * @author yida
- * @package com.yida.epub.factory
+ * @package com.yida.epub.builder
  * @date 2024-09-16 20:38
  * @description Type your description over here.
  */
-public class TableContentNodeFactory {
-	private TableContentNodeFactory() {
+public class TableContentNodeBuilder {
+	private TableContentNodeBuilder() {
 	}
 
 	private static class SingletonHolder {
-		private static final TableContentNodeFactory INSTANCE = new TableContentNodeFactory();
+		private static final TableContentNodeBuilder INSTANCE = new TableContentNodeBuilder();
+	}
+
+	public static TableContentNodeBuilder getInstance() {
+		return SingletonHolder.INSTANCE;
 	}
 
 	/**
@@ -30,10 +34,6 @@ public class TableContentNodeFactory {
 	public String buildTableContent() {
 		// TODO 尚未实现
 		return null;
-	}
-
-	public static TableContentNodeFactory getInstance() {
-		return SingletonHolder.INSTANCE;
 	}
 
 	private Map<String, TableContentNode> tableContentNodeMap = new HashMap<>();

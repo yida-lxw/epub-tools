@@ -336,13 +336,17 @@ public class FileUtils {
 	 * @author yida
 	 * @date 2024-09-16 21:39:34
 	 */
-	public String readFileFromClasspath(String filePath) throws IOException {
+	public static String readFileFromClasspath(String filePath) {
 		InputStream inputStream = FileUtils.class.getResourceAsStream(filePath);
 		if (null == inputStream) {
 			filePath = "/" + filePath;
 			inputStream = FileUtils.class.getResourceAsStream(filePath);
 		}
-		return IOUtils.toString(inputStream);
+		try {
+			return IOUtils.toString(inputStream);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	/**

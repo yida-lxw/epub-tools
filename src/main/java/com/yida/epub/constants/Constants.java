@@ -7,6 +7,13 @@ package com.yida.epub.constants;
  * @description 常量类
  */
 public class Constants {
+	//正斜杠
+	public static final String FORWARD_SLASH = "/";
+	//反斜杠
+	public static final String BACK_SLASH = "\\";
+	//反斜杠(用于Java正则表达式中)
+	public static final String BACK_SLASH_IN_REGEX = "\\\\";
+
 	public static final String FIRST_LEVEL_NODE_HTML_FRAGMENT = "<p class=\"calibre_8\">\n" +
 			"      <a href=\"index_split_${pageNumber}.html#${anchorId}\">${tableContentNodeName}</a>\n" +
 			"    </p>";
