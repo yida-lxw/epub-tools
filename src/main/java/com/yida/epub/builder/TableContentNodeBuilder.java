@@ -1,6 +1,8 @@
 package com.yida.epub.builder;
 
 import com.yida.epub.bean.TableContentNode;
+import com.yida.epub.constants.Constants;
+import com.yida.epub.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +35,33 @@ public class TableContentNodeBuilder {
 	 */
 	public String buildTableContent() {
 		// TODO 尚未实现
+		return null;
+	}
+
+	/**
+	 * @param tableContentNode
+	 * @return String
+	 * @description 构建一级目录节点代码片段
+	 * @author yida
+	 * @date 2024-09-17 19:49:20
+	 */
+	public String buildFirstLevelNode(TableContentNode tableContentNode) {
+		int pageNumber = tableContentNode.getPageNumber();
+		String anchorId = tableContentNode.getAnchorId();
+		String tableContentNodeName = tableContentNode.getTableContentNodeName();
+		String firstLevelNodeTempalte = Constants.FIRST_LEVEL_NODE_HTML_FRAGMENT;
+		String pageNumberStr = StringUtils.leftPad(pageNumber - 1, 4);
+		String nodeContent = firstLevelNodeTempalte.replace("${pageNumber}", pageNumberStr);
+		nodeContent = firstLevelNodeTempalte.replace("${tableContentNodeName}", tableContentNodeName);
+		if (StringUtils.isEmpty(anchorId)) {
+			nodeContent = firstLevelNodeTempalte.replace("#${anchorId}", "");
+		} else {
+			nodeContent = firstLevelNodeTempalte.replace("${anchorId}", anchorId);
+		}
+		return nodeContent;
+	}
+
+	public String buildNonFirstLevelNode(TableContentNode tableContentNode) {
 		return null;
 	}
 

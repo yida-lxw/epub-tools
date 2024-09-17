@@ -12,9 +12,9 @@ import java.util.List;
  */
 public class TableContentNode {
 	/**
-	 * 当前节点对应第几页
+	 * 当前节点对应第几页(从1开始计算)
 	 */
-	private String pageNumber;
+	private int pageNumber;
 
 	/**
 	 * 锚点元素id
@@ -41,11 +41,11 @@ public class TableContentNode {
 	 */
 	private List<String> childIds;
 
-	public String getPageNumber() {
+	public int getPageNumber() {
 		return pageNumber;
 	}
 
-	public void setPageNumber(String pageNumber) {
+	public void setPageNumber(int pageNumber) {
 		this.pageNumber = pageNumber;
 	}
 
