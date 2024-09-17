@@ -8,6 +8,9 @@ import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author yida
@@ -34,6 +37,55 @@ public class XMLUtils {
 		// 删除一个上面复制的那个节点
 		dataString = XMLUtils.removeElement(dataString, "/a/b/c[1]/d[1]/e[1]/f[1]/");
 		System.out.println(dataString);
+	}
+
+	public static Object fromXmlToBean(Element rootElt, Class<?> pojo) throws Exception {
+		Field[] fields = pojo.getDeclaredFields();
+		Object obj = pojo.newInstance();
+		for (Field field : fields) {
+			field.setAccessible(true);
+			String name = field.getName();
+			// 这一段的作用是如果字段在Element中不存在会抛出异常，如果出异常，则跳过。
+			try {
+				rootElt.elementTextTrim(name);
+			} catch (Exception ex) {
+				continue;
+			}
+			if (rootElt.elementTextTrim(name) != null && !"".equals(rootElt.elementTextTrim(name))) {
+				// 根据字段的类型将值转化为相应的类型，并设置到生成的对象中。
+				if (field.getType().equals(Long.class) || field.getType().equals(long.class)) {
+					field.set(obj, Long.parseLong(rootElt.elementTextTrim(name)));
+				} else if (field.getType().equals(String.class)) {
+					field.set(obj, rootElt.elementTextTrim(name));
+				} else if (field.getType().equals(Double.class) || field.getType().equals(double.class)) {
+					field.set(obj, Double.parseDouble(rootElt.elementTextTrim(name)));
+				} else if (field.getType().equals(Integer.class) || field.getType().equals(int.class)) {
+					field.set(obj, Integer.parseInt(rootElt.elementTextTrim(name)));
+				} else if (field.getType().equals(Date.class)) {
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+					Date date = format.parse(rootElt.elementTextTrim(name));
+					field.set(obj, date);
+				} else {
+					System.out.println("缺少" + field.getType() + "类型的在转化，可能造成数据缺失");
+				}
+			}
+		}
+		return obj;
+	}
+
+	public static Document parseXMLString(String xmlString) {
+		try {
+			return DocumentHelper.parseText(xmlString);
+		} catch (Exception e) {
+			return null;
+		}
+		/**
+		 *             Element root = doc.getRootElement();
+		 *             Iterator<Element> iterator = root.element("tree").elementIterator();
+		 *             while (iterator.hasNext()) {
+		 *                 Element node = (Element) iterator.next();
+		 *             }
+		 */
 	}
 
 	/**
