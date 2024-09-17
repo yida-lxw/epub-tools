@@ -349,6 +349,15 @@ public class FileUtils {
 		}
 	}
 
+	public static InputStream getInputStreamFromClasspath(String filePath) {
+		InputStream inputStream = FileUtils.class.getResourceAsStream(filePath);
+		if (null == inputStream) {
+			filePath = "/" + filePath;
+			inputStream = FileUtils.class.getResourceAsStream(filePath);
+		}
+		return inputStream;
+	}
+
 	/**
 	 * @param sourceDirPath
 	 * @param zipFilePath
