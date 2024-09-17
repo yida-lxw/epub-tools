@@ -1,5 +1,6 @@
 package com.yida.epub.utils;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -53,7 +54,7 @@ public class PDFUtils {
 	 * @date 2024-09-17 09:19:00
 	 */
 	public static boolean isPDFDoubleLayer(String pdfFilePath) throws IOException {
-		try (PDDocument document = PDDocument.load(new File(pdfFilePath))) {
+		try (PDDocument document = Loader.loadPDF(new File(pdfFilePath))) {
 			Set<PDPage> pagesWithAnnotations = new HashSet<>();
 			for (PDPage page : document.getPages()) {
 				if (page.getAnnotations().size() > 0) {
@@ -77,7 +78,7 @@ public class PDFUtils {
 		PDDocument pdDocument = null;
 		List<CompletableFuture> completableFutureList = new ArrayList<>();
 		try {
-			pdDocument = PDDocument.load(new File(pdfFilePath));
+			pdDocument = Loader.loadPDF(new File(pdfFilePath));
 			PDFRenderer pdfRenderer = new PDFRenderer(pdDocument);
 			for (int pageIndex = 0; pageIndex < pdDocument.getNumberOfPages(); pageIndex++) {
 				int finalPageIndex = pageIndex;
