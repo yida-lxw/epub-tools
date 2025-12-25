@@ -109,4 +109,9 @@ public class PDFUtils {
 			e.printStackTrace();
 		}
 	}
+
+//	public static void pdf2epub(String pdfFilePath, String epubFilePath) {
+//		PdfConverter.convert(new File(mobydick.pdf))
+//				.intoEpub("Moby Dick", new File("mobydick.epub"));
+//	}
 }
