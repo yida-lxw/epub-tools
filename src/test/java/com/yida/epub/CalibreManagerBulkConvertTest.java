@@ -16,7 +16,7 @@ public class CalibreManagerBulkConvertTest {
         /**目标电子书输出文件夹路径*/
         String destEBookOutputFolderPath = "D:/ChromeDownloads/ttttt";
         /**需要转换的目标格式*/
-        EBookFormat targetEBookFormat = EBookFormat.AZW3;
+        EBookFormat targetEBookFormat = EBookFormat.EPUB;
 
         //这3个参数可以不填
         String bookName = "";

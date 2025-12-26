@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,8 @@ import java.util.stream.Stream;
  */
 public class Application {
     public static final String inCompatibleMeta = "<meta name=\"viewport\" content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\"/>";
+
+    public static final List<String> advertiseWords = Arrays.asList("本书由“行行”整理", "提供最新最全的优质电子书下载", "ePUBw.COM", "请加小编微信", "读累了记得休息一会", "如果你不知道读什么书", "www.ireadweek.com", "公众号名称：幸福的味道");
 
     /**
      * 已实现功能：
@@ -61,7 +64,8 @@ public class Application {
         //标识是否为广告页的关键词
         String[] advertisementWordArray = {
                 "古德猫宁李", "关注“幸福的味道”微信公众号", "免费阅读更多经典自然文学",
-                "Digital Lab是上海译文出版社数字业务的实验部门"
+                "Digital Lab是上海译文出版社数字业务的实验部门", "分享译林更多好书", 
+                "新浪微博@果麦文化│微信公众号_果麦文化"
         };
         //需要直接删除的广告文本
         String[] advertiseContentArray = {
@@ -75,6 +79,27 @@ public class Application {
                         "          ePUBw.COM\n" +
                         "        </a> 提供最新最全的优质电子书下载！！！\n" +
                         "      </div>",
+                "<div class=\"calibre3\">\n" +
+                        "        本书由“\n" +
+                        "        <a href=\"http://epubw.com\" class=\"calibre1\">\n" +
+                        "          ePUBw.COM\n" +
+                        "        </a>”整理，\n" +
+                        "        <a href=\"http://epubw.com\" class=\"calibre1\">\n" +
+                        "          ePUBw.COM\n" +
+                        "        </a> 提供最新最全的优质电子书下载！！！\n" +
+                        "      </div>",
+                "<p class=\"calibre_8\">\n" +
+                        "      本书由“行行”整理，如果你不知道读什么书或者想获得更多免费电子书请加小编微信或QQ：2338856113 小编也和结交一些喜欢读书的朋友 或者关注小编个人微信公众号名称：幸福的味道 为了方便书友朋友找书和看书，小编自己做了一个电子书下载网站，网站的名称为：周读 网址： \n" +
+                        "      <a href=\"http://www.ireadweek.com\">\n" +
+                        "        www.ireadweek.com\n" +
+                        "      </a>\n" +
+                        "    </p>",
+                "<p class=\"calibre_9\">\n" +
+                        "      本书由“行行”整理，如果你不知道读什么书或者想获得更多免费电子书请加小编微信或QQ：2338856113 小编也和结交一些喜欢读书的朋友 或者关注小编个人微信公众号名称：幸福的味道 为了方便书友朋友找书和看书，小编自己做了一个电子书下载网站，网站的名称为：周读 网址： \n" +
+                        "      <a href=\"http://www.ireadweek.com\">\n" +
+                        "        www.ireadweek.com\n" +
+                        "      </a>\n" +
+                        "    </p>",
                 "<p height=\"1em\" width=\"0pt\" class=\"calibre2\">本书由“行行”整理，如果你不知道读什么书或者想获得更多免费电子书请加小编微信或QQ：2338856113 小编也和结交一些喜欢读书的朋友 或者关注小编个人微信公众号名称：幸福的味道 id：d716-716 为了方便书友朋友找书和看书，小编自己做了一个电子书下载网站，网站的名称为：周读 网址：http://www.ireadweek.com</p>"
         };
         //包含如下文本的节点需要删除
@@ -1323,6 +1348,11 @@ public class Application {
                         if(requiredDelete) {
                             return deleteAdvertisPageFile(currentFilePath, opfFilePath);
                         }
+                        boolean ifNeedToDelete = removeContainsAdvertismentNode(newHtmlContent, currentFilePath);
+                        if(ifNeedToDelete) {
+                            return deleteAdvertisPageFile(currentFilePath, opfFilePath);
+                        }
+                        newHtmlContent = FileUtils.readFileAsString(currentFilePath);
                         newHtmlContent = replaceTableContents(newHtmlContent);
                         //将剔除了广告语的页面内容再写入原文件中
                         FileUtils.write2File(currentFilePath, newHtmlContent);
@@ -1345,6 +1375,71 @@ public class Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 删除包含广告的节点
+     * @param htmlContent
+     * @param htmlFilePath
+     */
+    private static boolean removeContainsAdvertismentNode(String htmlContent, String htmlFilePath) {
+        Element doc = Jsoup.parse(htmlContent, "", Parser.xmlParser());
+        Elements candidates = doc.select("p,span,div");
+        if(null == candidates || candidates.size() == 0) {
+            return true;
+        }
+        boolean hadRemoved = false;
+        for (Element node : candidates) {
+            String text = node.ownText().trim();
+            if(StringUtils.isEmpty(text)) {
+                continue;
+            }
+            for (String keyword : advertiseWords) {
+                if (text.contains(keyword)) {
+                    node.remove();
+                    hadRemoved = true;
+                    break;
+                }
+            }
+        }
+
+        if(hadRemoved) {
+            boolean requiredDelete = checkIfDeleteAdvertisPage(doc);
+            String newHTMLPageFileContent = doc.outerHtml();
+            FileUtils.write2File(htmlFilePath, newHTMLPageFileContent);
+            return requiredDelete;
+        }
+        return false;
+    }
+
+    /**
+     * 判断当前页是否需要删除
+     * @param doc
+     * @return
+     */
+    private static boolean checkIfDeleteAdvertisPage(Element doc) {
+        boolean requiredDelete = false;
+        Elements divElements = doc.select("div");
+        if(null != divElements && divElements.size() > 0) {
+            if(divElements.size() > 3) {
+                requiredDelete = false;
+            } else {
+                Elements pElements = doc.select("p");
+                if(null != pElements && pElements.size() > 0) {
+                    requiredDelete = false;
+                } else {
+                    requiredDelete = true;
+                }
+            }
+        } else {
+            Elements pElements = doc.select("p");
+            if(null != pElements && pElements.size() > 0) {
+                requiredDelete = false;
+            } else {
+                requiredDelete = true;
+            }
+        }
+        return requiredDelete;
     }
 
     private static FileVisitResult deleteAdvertisPageFile(String currentFilePath, String opfFilePath) {
@@ -1406,7 +1501,7 @@ public class Application {
      * @return
      */
     private static boolean isAdvertisePageOfEpubw(String htmlContent) {
-        if(htmlContent.contains("本书由“行行”整理")) {
+        if(htmlContent.contains("本书由“行行”整理") || htmlContent.contains("请加小编微信")) {
             return true;
         }
         if(htmlContent.contains("读累了记得休息一会") || htmlContent.contains("如果你不知道读什么书") ||
@@ -1509,23 +1604,8 @@ public class Application {
             return new String[] {htmlFilePath, htmlContent, "false"};
         }
         Document doc = Jsoup.parse(htmlContent, "", Parser.xmlParser());
-        Elements divElements = doc.select("div");
-        if(null != divElements && divElements.size() > 0) {
-            if(divElements.size() > 3) {
-                return new String[] {htmlFilePath, htmlContent, "false"};
-            }
-            Elements pElements = doc.select("p");
-            if(null != pElements && pElements.size() > 0) {
-                return new String[] {htmlFilePath, htmlContent, "false"};
-            }
-            return new String[] {htmlFilePath, htmlContent, "true"};
-        } else {
-            Elements pElements = doc.select("p");
-            if(null != pElements && pElements.size() > 0) {
-                return new String[] {htmlFilePath, htmlContent, "false"};
-            }
-            return new String[] {htmlFilePath, htmlContent, "true"};
-        }
+        boolean requiredDelete = checkIfDeleteAdvertisPage(doc);
+        return new String[] {htmlFilePath, htmlContent, String.valueOf(requiredDelete)};
     }
 
     /**
