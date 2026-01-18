@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,7 +51,7 @@ public class Application {
     public static void main(String[] args) {
         String suffix = ".epub";
         //待处理的epub格式电子书存放的根目录
-        String basePath = "D:/ChromeDownloads/ttttt";
+		String basePath = "/Users/yida/Downloads/ttttt";
         //页面语言
         String language = "zh";
         //是否需要繁体转简体操作
