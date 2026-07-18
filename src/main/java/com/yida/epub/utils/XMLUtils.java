@@ -37,6 +37,9 @@ public class XMLUtils {
 		// 删除一个上面复制的那个节点
 		dataString = XMLUtils.removeElement(dataString, "/a/b/c[1]/d[1]/e[1]/f[1]/");
 		System.out.println(dataString);
+        if (null != inputStream) {
+            inputStream.close();
+        }
 	}
 
 	public static Object fromXmlToBean(Element rootElt, Class<?> pojo) throws Exception {

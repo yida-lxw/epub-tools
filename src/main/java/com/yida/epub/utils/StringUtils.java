@@ -27,8 +27,20 @@ public class StringUtils {
 	 * @param appRootPath
 	 */
 	public static String replaceBackSlash(String appRootPath) {
+        return replaceBackSlash(appRootPath, false);
+    }
+
+    /**
+     * 替换路径中的反斜杠为斜杠
+     *
+     * @param appRootPath
+     */
+    public static String replaceBackSlash(String appRootPath, boolean endsWithSlash) {
 		if (null != appRootPath && !"".equals(appRootPath)) {
 			appRootPath = appRootPath.replaceAll(Constants.BACK_SLASH_IN_REGEX, "/");
+        }
+        if (endsWithSlash && !appRootPath.endsWith("/")) {
+            appRootPath = appRootPath + "/";
 		}
 		return appRootPath;
 	}

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -101,7 +102,7 @@ public class ZipUtils {
 	public static boolean zip(File inputFile, String zipOutPutFileName) {
 		ZipOutputStream out = null;
 		try {
-			out = new ZipOutputStream(new FileOutputStream(zipOutPutFileName));
+			out = new ZipOutputStream(new FileOutputStream(zipOutPutFileName), Charset.forName("UTF-8"));
 			return zip(inputFile, out, "");
 
 		} catch (Exception e) {
@@ -185,7 +186,7 @@ public class ZipUtils {
 			// 实例化 FileOutputStream 对象
 			fileOutputStream = new FileOutputStream(zipFile);
 			// 实例化 ZipOutputStream 对象
-			zipOutputStream = new ZipOutputStream(fileOutputStream);
+			zipOutputStream = new ZipOutputStream(fileOutputStream, Charset.forName("UTF-8"));
 			// 创建 ZipEntry 对象
 			ZipEntry zipEntry = null;
 			// 遍历源文件数组
@@ -248,7 +249,7 @@ public class ZipUtils {
 		long start = System.currentTimeMillis();
 		ZipOutputStream zos = null;
 		try {
-			zos = new ZipOutputStream(out);
+			zos = new ZipOutputStream(out, Charset.forName("UTF-8"));
 			File sourceFile = new File(srcDir);
 			compress(sourceFile, zos, sourceFile.getName(), KeepDirStructure);
 			long end = System.currentTimeMillis();
@@ -278,7 +279,7 @@ public class ZipUtils {
 		long start = System.currentTimeMillis();
 		ZipOutputStream zos = null;
 		try {
-			zos = new ZipOutputStream(out);
+			zos = new ZipOutputStream(out, Charset.forName("UTF-8"));
 			for (File srcFile : srcFiles) {
 				byte[] buf = new byte[BUFFER];
 				zos.putNextEntry(new ZipEntry(srcFile.getName()));
@@ -360,7 +361,7 @@ public class ZipUtils {
 			IOException {
 		ZipOutputStream zos = null;
 		try {
-			zos = new ZipOutputStream(new FileOutputStream(destZipFile));
+			zos = new ZipOutputStream(new FileOutputStream(destZipFile), Charset.forName("UTF-8"));
 			for (File file : listFiles) {
 				if (file.isDirectory()) {
 					zipDirectory(file, file.getName(), zos);
@@ -370,6 +371,7 @@ public class ZipUtils {
 			}
 			return true;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		} finally {
 			zos.flush();
@@ -388,12 +390,16 @@ public class ZipUtils {
 	public static boolean zip(String[] files, String destZipFile) throws FileNotFoundException, IOException {
 		List<File> listFiles = new ArrayList<File>();
 		for (int i = 0; i < files.length; i++) {
-			listFiles.add(new File(files[i]));
+			File targetFile = new File(files[i]);
+			if (!targetFile.exists()) {
+				continue;
+			}
+			listFiles.add(targetFile);
 		}
 		return zipFiles(listFiles, destZipFile);
 	}
 
-	public static boolean zip(List<String> files, String destZipFile) throws FileNotFoundException, IOException {
+	public static boolean zip(List<String> files, String destZipFile) throws IOException {
 		return zip(files.toArray(new String[]{}), destZipFile);
 	}
 
@@ -414,8 +420,8 @@ public class ZipUtils {
 				continue;
 			}
 			zos.putNextEntry(new ZipEntry(parentFolder + "/" + file.getName()));
-			BufferedInputStream bis = new BufferedInputStream(
-					new FileInputStream(file));
+			FileInputStream fileInputStream = new FileInputStream(file);
+			BufferedInputStream bis = new BufferedInputStream(fileInputStream);
 			long bytesRead = 0;
 			byte[] bytesIn = new byte[BUFFER];
 			int read = 0;
@@ -424,6 +430,8 @@ public class ZipUtils {
 				bytesRead += read;
 			}
 			zos.closeEntry();
+			fileInputStream.close();
+			bis.close();
 		}
 	}
 
@@ -438,8 +446,8 @@ public class ZipUtils {
 	public static void zipFile(File file, ZipOutputStream zos)
 			throws FileNotFoundException, IOException {
 		zos.putNextEntry(new ZipEntry(file.getName()));
-		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(
-				file));
+		FileInputStream fileInputStream = new FileInputStream(file);
+		BufferedInputStream bis = new BufferedInputStream(fileInputStream);
 		long bytesRead = 0L;
 		byte[] bytesIn = new byte[BUFFER];
 		int read = 0;
@@ -448,5 +456,42 @@ public class ZipUtils {
 			bytesRead += read;
 		}
 		zos.closeEntry();
+		fileInputStream.close();
+		bis.close();
+	}
+
+	public static boolean zipFiles(List<File> listFiles, String destZipFile, String baseDir) throws IOException {
+		File baseDirFile = new File(baseDir);
+		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(destZipFile), StandardCharsets.UTF_8)) {
+			for (File file : listFiles) {
+				addFileToZip(file, baseDirFile, zos);
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	private static void addFileToZip(File file, File baseDir, ZipOutputStream zos) throws IOException {
+		String relativePath = baseDir.toURI().relativize(file.toURI()).getPath();
+		if (file.isDirectory()) {
+			// 处理目录：添加目录条目并递归子文件
+			if (!relativePath.endsWith("/")) relativePath += "/";
+			zos.putNextEntry(new ZipEntry(relativePath));
+			zos.closeEntry();
+		} else {
+			// 处理文件：添加文件条目
+			zos.putNextEntry(new ZipEntry(relativePath));
+			try (FileInputStream fis = new FileInputStream(file);
+				 BufferedInputStream bis = new BufferedInputStream(fis)) {
+				byte[] buffer = new byte[BUFFER];
+				int len;
+				while ((len = bis.read(buffer)) > 0) {
+					zos.write(buffer, 0, len);
+				}
+			}
+			zos.closeEntry();
+		}
 	}
 }
